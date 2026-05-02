@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title id="page-title">VetSafe — Ma'lumot</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23059669'%3E%3Cpath d='M12 2L4 5v6c0 5.5 3.5 10.7 8 12 4.5-1.3 8-6.5 8-12V5l-8-3zm-1 15l-4-4 1.4-1.4 2.6 2.6 5.6-5.6L18 10l-7 7z'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css?v=23" />
+
+  <script>
+    (function () {
+      var stored = localStorage.getItem('vetcare_theme');
+      var prefers = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var dark = stored === 'dark' || (!stored && prefers);
+      if (dark) document.documentElement.classList.add('dark');
+    })();
+  </script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif']
+          },
+          colors: {
+            brand: { 50:'#ecfdf5',100:'#d1fae5',200:'#a7f3d0',400:'#34d399',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b' },
+            warm: { 50:'#fffbeb',100:'#fef3c7',200:'#fde68a',400:'#fbbf24',500:'#f59e0b',600:'#d97706',700:'#b45309' }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="font-sans bg-white text-slate-900 antialiased transition-colors duration-200 dark:bg-slate-950 dark:text-slate-100">
+
+  <header id="navbar" class="fixed top-0 inset-x-0 z-40 transition-all duration-300 scrolled">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-2 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 flex items-center justify-center shadow-lg shadow-brand-600/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L4 5v6c0 5.5 3.5 10.7 8 12 4.5-1.3 8-6.5 8-12V5l-8-3zm-1 15l-4-4 1.4-1.4 2.6 2.6 5.6-5.6L18 10l-7 7z"/>
+            </svg>
+          </div>
+          <div class="flex flex-col leading-tight">
+            <span class="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">VetSafe</span>
+            <span class="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium" data-i18n="brand.tagline">Veterinariya va oziq-ovqat</span>
+          </div>
+        </a>
+
+        <nav id="primary-nav" class="hidden md:flex items-center gap-1">
+          <a href="index.html" class="nav-link" data-i18n="nav.home">Bosh sahifa</a>
+          <a href="index.html#contact" id="nav-contact" class="nav-link" data-i18n="nav.contact">Bog'lanish</a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <button id="theme-btn" type="button" class="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition" aria-label="Toggle theme" title="Tun/Kun rejimi">
+            <svg class="theme-icon-sun hidden w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <svg class="theme-icon-moon w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          </button>
+
+          <div class="relative">
+            <button id="lang-btn" class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition">
+              <span id="lang-current">🇺🇿 UZ</span>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div id="lang-menu" class="hidden absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
+              <button class="lang-option" data-lang="uz">🇺🇿 O'zbek</button>
+              <button class="lang-option" data-lang="ru">🇷🇺 Русский</button>
+              <button class="lang-option" data-lang="en">🇬🇧 English</button>
+            </div>
+          </div>
+
+          <a id="back-link" href="index.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition" title="Orqaga">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <span data-i18n="section.back">Orqaga</span>
+          </a>
+
+          <button id="mobile-menu-btn" class="md:hidden p-2 -mr-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <div id="mobile-nav-list" class="px-4 py-3 flex flex-col gap-1">
+        <a href="index.html" class="mobile-nav-link" data-i18n="nav.home">Bosh sahifa</a>
+        <a href="index.html#contact" id="mobile-nav-contact" class="mobile-nav-link" data-i18n="nav.contact">Bog'lanish</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-20 pb-16 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav id="breadcrumb" class="text-sm text-slate-500 dark:text-slate-400 mb-6 flex items-center gap-2 flex-wrap">
+        <a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition" data-i18n="nav.home">Bosh sahifa</a>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <a id="breadcrumb-section" class="hover:text-brand-600 dark:hover:text-brand-400 transition" href="index.html">...</a>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+        <span id="breadcrumb-content" class="text-slate-700 dark:text-slate-200 font-medium truncate">...</span>
+      </nav>
+
+      <div id="content-wrapper">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+          <div class="aspect-[4/3] bg-slate-200 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
+          <div class="space-y-4">
+            <div class="h-6 w-32 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
+            <div class="h-10 w-full bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
+            <div class="h-4 w-full bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
+            <div class="h-4 w-5/6 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
+            <div class="h-4 w-2/3 bg-slate-200 dark:bg-slate-800 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="content-error" class="hidden mt-8 bg-rose-50 dark:bg-rose-900/30 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 rounded-xl px-5 py-4">
+        <div class="font-semibold mb-1" data-i18n="content.error_title">Ma'lumot topilmadi</div>
+        <div class="text-sm" data-i18n="content.error_message">Bu ma'lumot mavjud emas yoki o'chirib tashlangan.</div>
+        <a href="index.html" class="inline-flex items-center gap-1.5 mt-3 text-sm font-medium text-brand-700 dark:text-brand-400 hover:underline">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+          <span data-i18n="section.back_home">Bosh sahifaga qaytish</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-slate-900 text-slate-300 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
+        <p>&copy; <span id="footer-year"></span> VetSafe. <span data-i18n="footer.rights">Barcha huquqlar himoyalangan.</span></p>
+        <a href="index.html" class="hover:text-brand-400 transition" data-i18n="nav.home">Bosh sahifa</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/config.js?v=23"></script>
+  <script src="js/i18n.js?v=23"></script>
+  <script src="js/api.js?v=23"></script>
+  <script src="js/content.js?v=23"></script>
+</body>
+</html>
