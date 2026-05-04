@@ -136,7 +136,7 @@ const SectionPage = {
         return;
       }
 
-      document.title = section.title + ' — VetSafe';
+      document.title = section.title;
       document.getElementById('breadcrumb-section').textContent = section.title;
       this.renderHeader(section);
       this.renderBlocks(section.items || []);

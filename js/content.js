@@ -144,7 +144,7 @@ const ContentPage = {
         breadcrumbSection.textContent = window.t('section.unknown', this.state.lang) || '—';
       }
       document.getElementById('breadcrumb-content').textContent = item.title;
-      document.title = item.title + ' — VetSafe';
+      document.title = item.title;
 
       this.renderContent(item, parentSection);
       this.bindImageFallbacks();

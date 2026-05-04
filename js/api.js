@@ -35,6 +35,19 @@ window.Api = {
   },
 
   /**
+   * Fetch all active laboratory department heads.
+   */
+  async getLabHeads() {
+    const url = `${this.base()}/api/v1/lab-heads?onlyActive=true`;
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+    }
+    return res.json();
+  },
+
+  /**
    * Resolve a relative or absolute media URL into an absolute one the browser can fetch.
    * Backend returns relative paths like "/uploads/..." which need the base prepended when
    * the frontend is hosted on a different origin.

@@ -2,12 +2,12 @@
 window.I18N = {
   uz: {
     meta: {
-      title: "VetSafe — Veterinariya va oziq-ovqat xavfsizligi",
-      description: "Hayvonlar salomatligi va aholi uchun xavfsiz oziq-ovqat ta'minoti yo'lida professional davlat xizmati"
+      title: "Respublika hayvonlar kasalliklari tashxisi va oziq-ovqat mahsulotlari xavfsizligi davlat markazi",
+      description: "Respublika hayvonlar kasalliklari tashxisi va oziq-ovqat mahsulotlari xavfsizligi davlat markazi"
     },
     brand: {
-      name: "VetSafe",
-      tagline: "Veterinariya va oziq-ovqat"
+      name: "Respublika hayvonlar kasalliklari tashxisi va oziq-ovqat mahsulotlari xavfsizligi davlat markazi",
+      shortName: "Davlat Veterinariya Markazi"
     },
     nav: {
       home: "Bosh sahifa",
@@ -17,9 +17,9 @@ window.I18N = {
     },
     hero: {
       badge: "Sertifikatlangan davlat darajasi",
-      title1: "Hayvonlar salomatligi va",
-      title2: "oziq-ovqat xavfsizligi",
-      subtitle: "Professional veterinariya nazorati va aholiga sifatli, xavfsiz oziq-ovqat ta'minoti uchun mas'ul davlat xizmati.",
+      title1: "Respublika hayvonlar kasalliklari tashxisi va",
+      title2: "oziq-ovqat mahsulotlari xavfsizligi davlat markazi",
+      subtitle: "",
       cta_primary: "Xizmatlarimiz",
       cta_secondary: "Bog'lanish",
       stat1: "Yillik tajriba",
@@ -31,8 +31,8 @@ window.I18N = {
     },
     sections: {
       kicker: "Xizmatlarimiz",
-      title: "Veterinariya va oziq-ovqat sohasidagi xizmatlar",
-      subtitle: "Hayvonlar salomatligini ta'minlash va aholi uchun xavfsiz mahsulotlar nazoratini olib boramiz",
+      title: "Xizmatlar",
+      subtitle: "",
       loading: "Bo'limlar yuklanmoqda...",
       empty_title: "Hali kontent qo'shilmagan",
       empty_message: "Tez orada ushbu yerda yangi xizmatlar paydo bo'ladi.",
@@ -57,15 +57,22 @@ window.I18N = {
     contact: {
       kicker: "Bog'lanish",
       title: "Biz bilan aloqa",
-      subtitle: "Veterinariya yoki oziq-ovqat xavfsizligi yuzasidan murojaat qilish uchun",
+      subtitle: "",
       phone_label: "Tezkor liniya",
       address_label: "Manzil",
       address_value: "Toshkent shahar, Yunusobod tumani",
       hours_label: "Ish vaqti",
       hours_value: "Du-Ju: 09:00-18:00"
     },
+    lab_heads: {
+      nav: "Bo'lim boshliqlari",
+      kicker: "Rahbariyat",
+      title: "Laboratoriya bo'lim boshliqlari",
+      phone_label: "Telefon",
+      hours_label: "Qabul vaqti"
+    },
     footer: {
-      tagline: "Hayvonlar salomatligi va aholining oziq-ovqat xavfsizligini ta'minlash.",
+      tagline: "",
       links_title: "Sahifalar",
       contact_title: "Aloqa",
       rights: "Barcha huquqlar himoyalangan.",
@@ -75,12 +82,12 @@ window.I18N = {
 
   ru: {
     meta: {
-      title: "VetSafe — Ветеринария и безопасность продуктов",
-      description: "Профессиональная государственная служба по охране здоровья животных и обеспечению безопасности продуктов питания"
+      title: "Республиканский государственный центр диагностики болезней животных и безопасности пищевых продуктов",
+      description: "Республиканский государственный центр диагностики болезней животных и безопасности пищевых продуктов"
     },
     brand: {
-      name: "VetSafe",
-      tagline: "Ветеринария и продукты"
+      name: "Республиканский государственный центр диагностики болезней животных и безопасности пищевых продуктов",
+      shortName: "Государственный ветеринарный центр"
     },
     nav: {
       home: "Главная",
@@ -90,9 +97,9 @@ window.I18N = {
     },
     hero: {
       badge: "Сертифицированный государственный уровень",
-      title1: "Здоровье животных и",
-      title2: "безопасность продуктов",
-      subtitle: "Профессиональный ветеринарный контроль и государственная служба, ответственная за качественное и безопасное продовольствие для населения.",
+      title1: "Республиканский государственный центр",
+      title2: "диагностики болезней животных и безопасности пищевых продуктов",
+      subtitle: "",
       cta_primary: "Наши услуги",
       cta_secondary: "Связаться",
       stat1: "Лет опыта",
@@ -104,8 +111,8 @@ window.I18N = {
     },
     sections: {
       kicker: "Наши услуги",
-      title: "Услуги в области ветеринарии и продовольствия",
-      subtitle: "Обеспечиваем здоровье животных и контроль безопасности продуктов для населения",
+      title: "Услуги",
+      subtitle: "",
       loading: "Разделы загружаются...",
       empty_title: "Пока нет контента",
       empty_message: "Скоро здесь появятся новые услуги.",
@@ -130,15 +137,22 @@ window.I18N = {
     contact: {
       kicker: "Контакты",
       title: "Связь с нами",
-      subtitle: "Для обращений по ветеринарии или безопасности продуктов",
+      subtitle: "",
       phone_label: "Горячая линия",
       address_label: "Адрес",
       address_value: "г. Ташкент, Юнусабадский район",
       hours_label: "График работы",
       hours_value: "Пн-Пт: 09:00-18:00"
     },
+    lab_heads: {
+      nav: "Руководство",
+      kicker: "Руководство",
+      title: "Заведующие лабораторных отделов",
+      phone_label: "Телефон",
+      hours_label: "Часы приёма"
+    },
     footer: {
-      tagline: "Обеспечение здоровья животных и безопасности продуктов питания.",
+      tagline: "",
       links_title: "Страницы",
       contact_title: "Контакты",
       rights: "Все права защищены.",
@@ -148,12 +162,12 @@ window.I18N = {
 
   en: {
     meta: {
-      title: "VetSafe — Veterinary & Food Safety",
-      description: "Professional government service for animal health and food safety"
+      title: "Republican State Center for Animal Disease Diagnostics and Food Product Safety",
+      description: "Republican State Center for Animal Disease Diagnostics and Food Product Safety"
     },
     brand: {
-      name: "VetSafe",
-      tagline: "Veterinary & Food Safety"
+      name: "Republican State Center for Animal Disease Diagnostics and Food Product Safety",
+      shortName: "State Veterinary Center"
     },
     nav: {
       home: "Home",
@@ -163,9 +177,9 @@ window.I18N = {
     },
     hero: {
       badge: "Certified government grade",
-      title1: "Animal health &",
-      title2: "food safety",
-      subtitle: "Professional veterinary oversight and a government service committed to safe, high-quality food supply for the population.",
+      title1: "Republican State Center for",
+      title2: "Animal Disease Diagnostics and Food Product Safety",
+      subtitle: "",
       cta_primary: "Our services",
       cta_secondary: "Contact us",
       stat1: "Years of experience",
@@ -177,8 +191,8 @@ window.I18N = {
     },
     sections: {
       kicker: "Our services",
-      title: "Veterinary & food safety services",
-      subtitle: "We ensure animal health and food safety oversight for the public",
+      title: "Services",
+      subtitle: "",
       loading: "Loading sections...",
       empty_title: "No content yet",
       empty_message: "New services will appear here soon.",
@@ -203,15 +217,22 @@ window.I18N = {
     contact: {
       kicker: "Contact",
       title: "Get in touch",
-      subtitle: "For veterinary or food safety inquiries",
+      subtitle: "",
       phone_label: "Hotline",
       address_label: "Address",
       address_value: "Tashkent city, Yunusobod district",
       hours_label: "Working hours",
       hours_value: "Mon-Fri: 09:00-18:00"
     },
+    lab_heads: {
+      nav: "Department heads",
+      kicker: "Leadership",
+      title: "Laboratory department heads",
+      phone_label: "Phone",
+      hours_label: "Reception hours"
+    },
     footer: {
-      tagline: "Ensuring animal health and food safety for the public.",
+      tagline: "",
       links_title: "Pages",
       contact_title: "Contact",
       rights: "All rights reserved.",
