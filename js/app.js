@@ -152,16 +152,18 @@ const App = {
     list.innerHTML = this.renderSkeleton(2);
 
     try {
-      const sections = await window.Api.getSectionsWithContents({ lang: this.state.lang });
-      this.rebuildNav(sections);
+      const tree = await window.Api.getSectionsTreeWithContents({ lang: this.state.lang });
+      // Only top-level (root) sections appear on the home page — child sections live
+      // inside their parent's section.html page.
+      this.rebuildNav(tree);
 
-      if (!sections || sections.length === 0) {
+      if (!tree || tree.length === 0) {
         list.innerHTML = this.renderEmpty();
         return;
       }
 
       list.innerHTML = `<div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-7">${
-        sections.map((section, sIdx) => this.renderSectionCard(section, sIdx)).join('')
+        tree.map((section, sIdx) => this.renderSectionCard(section, sIdx)).join('')
       }</div>`;
       this.observeNewAnimated();
       this.bindImageFallbacks();
@@ -171,44 +173,34 @@ const App = {
     }
   },
 
-  rebuildNav(sections) {
-    const desktopNav = document.getElementById('primary-nav');
-    const mobileNav = document.getElementById('mobile-nav-list');
-    const desktopContact = document.getElementById('nav-contact');
-    const mobileContact = document.getElementById('mobile-nav-contact');
-
-    if (desktopNav) {
-      desktopNav.querySelectorAll('.dynamic-section-link').forEach(el => el.remove());
-      sections.forEach(s => {
-        const a = document.createElement('a');
-        a.href = `section.html?slug=${encodeURIComponent(s.slug)}`;
-        a.className = 'nav-link dynamic-section-link';
-        a.textContent = s.title;
-        desktopNav.insertBefore(a, desktopContact);
-      });
-    }
-
-    if (mobileNav) {
-      mobileNav.querySelectorAll('.dynamic-section-link').forEach(el => el.remove());
-      sections.forEach(s => {
-        const a = document.createElement('a');
-        a.href = `section.html?slug=${encodeURIComponent(s.slug)}`;
-        a.className = 'mobile-nav-link dynamic-section-link';
-        a.textContent = s.title;
-        a.addEventListener('click', () => document.getElementById('mobile-menu').classList.add('hidden'));
-        mobileNav.insertBefore(a, mobileContact);
-      });
-    }
+  rebuildNav(rootSections) {
+    NavBuilder.render({
+      rootSections,
+      desktopNav: document.getElementById('primary-nav'),
+      mobileNav: document.getElementById('mobile-nav-list'),
+      desktopAnchor: document.getElementById('nav-contact'),
+      mobileAnchor: document.getElementById('mobile-nav-contact'),
+      activeSlug: null,
+      onMobileLinkClick: () => document.getElementById('mobile-menu').classList.add('hidden')
+    });
   },
 
   renderSectionCard(section, sectionIndex) {
     const items = section.items || [];
+    const children = section.children || [];
     const itemsCount = items.length;
-    const previewImage = items.find(i => i.imageUrl)?.imageUrl;
+    const childrenCount = children.length;
+    // Prefer this section's own image, otherwise fall back to a child section's image.
+    const ownImage = items.find(i => i.imageUrl)?.imageUrl;
+    const childImage = !ownImage
+      ? children.flatMap(c => c.items || []).find(i => i.imageUrl)?.imageUrl
+      : null;
+    const previewImage = ownImage || childImage;
     const imageUrl = previewImage ? window.Api.resolveMediaUrl(previewImage) : '';
     const number = String(sectionIndex + 1).padStart(2, '0');
     const openLabel = window.t('sections.open', this.state.lang) || 'Ochish';
     const blocksLabel = window.t('sections.blocks', this.state.lang) || 'blok';
+    const subLabel = window.t('sections.subsections', this.state.lang) || 'ichki bo\'lim';
 
     return `
       <a href="section.html?slug=${escapeAttr(section.slug)}"
@@ -226,7 +218,9 @@ const App = {
         </div>
         <div class="p-7 flex flex-col flex-1">
           <h3 class="font-display text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">${escapeHtml(section.title)}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">${itemsCount} ${blocksLabel}</p>
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">
+            ${itemsCount} ${escapeHtml(blocksLabel)}${childrenCount ? ` · ${childrenCount} ${escapeHtml(subLabel)}` : ''}
+          </p>
           <div class="mt-auto inline-flex items-center gap-2 text-base font-semibold text-brand-600 dark:text-brand-400 group-hover:gap-3 transition-all">
             <span>${openLabel}</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>

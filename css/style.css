@@ -50,6 +50,138 @@ html {
 .dark .mobile-nav-link { color: rgb(203 213 225); }
 .dark .mobile-nav-link:hover { background: rgb(30 41 59); }
 
+/* === Nav dropdown (parent sections with children) === */
+.nav-dropdown { position: relative; display: inline-block; }
+.nav-dropdown-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  color: rgb(71 85 105);
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  transition: color 0.15s, background-color 0.15s;
+}
+.nav-dropdown-trigger:hover,
+.nav-dropdown.open .nav-dropdown-trigger {
+  color: rgb(15 23 42);
+  background: rgb(241 245 249);
+}
+.dark .nav-dropdown-trigger { color: rgb(203 213 225); }
+.dark .nav-dropdown-trigger:hover,
+.dark .nav-dropdown.open .nav-dropdown-trigger {
+  color: rgb(248 250 252);
+  background: rgb(30 41 59);
+}
+.nav-dropdown-chevron {
+  width: 0.85rem;
+  height: 0.85rem;
+  transition: transform 0.18s ease;
+}
+.nav-dropdown.open .nav-dropdown-chevron { transform: rotate(180deg); }
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 18rem;
+  max-width: 22rem;
+  padding: 0.5rem;
+  background: #ffffff;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 1rem;
+  box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.06);
+  opacity: 0;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 50;
+}
+.nav-dropdown.open .nav-dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.dark .nav-dropdown-menu {
+  background: rgb(15 23 42);
+  border-color: rgb(30 41 59);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-dropdown-item {
+  display: block;
+  padding: 0.625rem 0.875rem;
+  color: rgb(51 65 85);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.35;
+  border-radius: 0.625rem;
+  transition: background-color 0.12s, color 0.12s;
+}
+.nav-dropdown-item:hover {
+  background: rgb(236 253 245); /* brand-50 */
+  color: rgb(4 120 87);          /* brand-700 */
+}
+.nav-dropdown-item.active {
+  background: rgb(209 250 229); /* brand-100 */
+  color: rgb(4 120 87);
+}
+.dark .nav-dropdown-item { color: rgb(203 213 225); }
+.dark .nav-dropdown-item:hover {
+  background: rgba(16, 185, 129, 0.12);
+  color: rgb(110 231 183);
+}
+.dark .nav-dropdown-item.active {
+  background: rgba(16, 185, 129, 0.22);
+  color: rgb(167 243 208);
+}
+
+/* Mobile collapsible parent group */
+.mobile-nav-group { display: flex; flex-direction: column; }
+.mobile-nav-group-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  color: rgb(51 65 85);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.mobile-nav-group-trigger:hover { background: rgb(241 245 249); }
+.dark .mobile-nav-group-trigger { color: rgb(203 213 225); }
+.dark .mobile-nav-group-trigger:hover { background: rgb(30 41 59); }
+.mobile-nav-group-chevron { width: 1rem; height: 1rem; transition: transform 0.18s ease; }
+.mobile-nav-group.open .mobile-nav-group-chevron { transform: rotate(180deg); }
+.mobile-nav-group-list {
+  display: none;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-left: 0.75rem;
+  margin-top: 0.125rem;
+  border-left: 2px solid rgb(226 232 240);
+}
+.mobile-nav-group.open .mobile-nav-group-list { display: flex; }
+.dark .mobile-nav-group-list { border-left-color: rgb(30 41 59); }
+.mobile-nav-sublink {
+  padding: 0.5rem 0.75rem;
+  color: rgb(71 85 105);
+  font-size: 0.9rem;
+  border-radius: 0.5rem;
+  line-height: 1.35;
+}
+.mobile-nav-sublink:hover { background: rgb(236 253 245); color: rgb(4 120 87); }
+.dark .mobile-nav-sublink { color: rgb(148 163 184); }
+.dark .mobile-nav-sublink:hover { background: rgba(16, 185, 129, 0.12); color: rgb(110 231 183); }
+
 /* === Language menu === */
 .lang-option {
   display: block;

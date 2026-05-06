@@ -19,6 +19,23 @@ window.Api = {
   },
 
   /**
+   * Fetch the section hierarchy as a tree (root sections with nested `children`),
+   * each carrying its localized content blocks. Used by pages that need to render
+   * sub-sections under a parent.
+   */
+  async getSectionsTreeWithContents({ lang = 'uz' } = {}) {
+    const url = `${this.base()}/api/v1/sections/with-contents/tree?onlyActive=true&lang=${encodeURIComponent(lang)}`;
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'Accept-Language': lang }
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+    }
+    return res.json();
+  },
+
+  /**
    * Fetch one content block by id, localized to the requested language.
    * Used by the content detail page (content.html?id=...).
    */

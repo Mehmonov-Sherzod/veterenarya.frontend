@@ -140,7 +140,8 @@ const LabHeadsPage = {
         <article class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
           <div class="aspect-[4/3] bg-slate-100 dark:bg-slate-900 overflow-hidden">${photoBlock}</div>
           <div class="p-6">
-            <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white mb-4">${escape(h.fullName)}</h3>
+            <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">${escape(h.fullName)}</h3>
+            ${h.department ? `<div class="text-sm text-brand-700 dark:text-brand-400 font-medium mt-1 mb-4">${escape(h.department)}</div>` : '<div class="mb-4"></div>'}
             <div class="space-y-3 text-sm">
               <div class="flex items-start gap-3">
                 <div class="w-9 h-9 rounded-lg bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center flex-shrink-0">

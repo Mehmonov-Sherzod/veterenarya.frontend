@@ -40,7 +40,9 @@ window.I18N = {
       error_title: "Xato yuz berdi",
       error_message: "Server bilan ulanib bo'lmadi. Iltimos, keyinroq qaytadan urinib ko'ring.",
       open: "Ochish",
-      blocks: "blok"
+      blocks: "blok",
+      subsections: "ichki bo'lim",
+      subsections_title: "Ichki bo'limlar"
     },
     section: {
       back: "Orqaga",
@@ -120,7 +122,9 @@ window.I18N = {
       error_title: "Произошла ошибка",
       error_message: "Не удалось подключиться к серверу. Пожалуйста, попробуйте позже.",
       open: "Открыть",
-      blocks: "блок"
+      blocks: "блок",
+      subsections: "подраздел",
+      subsections_title: "Подразделы"
     },
     section: {
       back: "Назад",
@@ -200,7 +204,9 @@ window.I18N = {
       error_title: "Something went wrong",
       error_message: "Could not connect to the server. Please try again later.",
       open: "Open",
-      blocks: "blocks"
+      blocks: "blocks",
+      subsections: "subsection",
+      subsections_title: "Subsections"
     },
     section: {
       back: "Back",
