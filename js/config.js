@@ -1,7 +1,7 @@
 // Frontend configuration. Adjust API_BASE_URL when deploying behind a proxy or to a different host.
 window.AppConfig = {
   // Backend API base URL (no trailing slash).
-  API_BASE_URL: 'http://localhost:5099',
+  API_BASE_URL: 'http://localhost:5035',
 
   // Default UI language ('uz' | 'ru' | 'en').
   DEFAULT_LANGUAGE: 'uz',

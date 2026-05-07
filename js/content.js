@@ -56,8 +56,8 @@ const ContentPage = {
       const value = window.t(key, this.state.lang);
       if (value !== null) el.textContent = value;
     });
-    const flagMap = { uz: "🇺🇿 UZ", ru: "🇷🇺 RU", en: "🇬🇧 EN" };
-    document.getElementById('lang-current').textContent = flagMap[this.state.lang] || flagMap.uz;
+    const codeMap = { uz: "UZ", ru: "RU", en: "EN" };
+    document.getElementById('lang-current').textContent = codeMap[this.state.lang] || codeMap.uz;
     document.querySelectorAll('.lang-option').forEach(b =>
       b.classList.toggle('active', b.dataset.lang === this.state.lang));
   },
@@ -85,31 +85,21 @@ const ContentPage = {
   },
 
   rebuildNav(sections, currentSectionSlug) {
-    const desktopNav = document.getElementById('primary-nav');
-    const mobileNav = document.getElementById('mobile-nav-list');
-    const desktopContact = document.getElementById('nav-contact');
-    const mobileContact = document.getElementById('mobile-nav-contact');
-
-    if (desktopNav) {
-      desktopNav.querySelectorAll('.dynamic-section-link').forEach(el => el.remove());
-      sections.forEach(s => {
-        const a = document.createElement('a');
-        a.href = `section.html?slug=${encodeURIComponent(s.slug)}`;
-        a.className = 'nav-link dynamic-section-link' + (s.slug === currentSectionSlug ? ' active' : '');
-        a.textContent = s.title;
-        desktopNav.insertBefore(a, desktopContact);
-      });
-    }
-    if (mobileNav) {
-      mobileNav.querySelectorAll('.dynamic-section-link').forEach(el => el.remove());
-      sections.forEach(s => {
-        const a = document.createElement('a');
-        a.href = `section.html?slug=${encodeURIComponent(s.slug)}`;
-        a.className = 'mobile-nav-link dynamic-section-link' + (s.slug === currentSectionSlug ? ' active' : '');
-        a.textContent = s.title;
-        mobileNav.insertBefore(a, mobileContact);
-      });
-    }
+    if (!window.NavBuilder) return;
+    // Use the shared NavBuilder so this page gets the same dropdown-aware nav as
+    // the home page (parents with children become hover dropdowns).
+    window.NavBuilder.render({
+      rootSections: Array.isArray(sections) ? sections : [],
+      desktopNav: document.getElementById('primary-nav'),
+      mobileNav: document.getElementById('mobile-nav-list'),
+      desktopAnchor: document.querySelector('#primary-nav a[href="lab-heads.html"]'),
+      mobileAnchor: document.querySelector('#mobile-nav-list a[href="lab-heads.html"]'),
+      activeSlug: currentSectionSlug || null,
+      onMobileLinkClick: () => {
+        const m = document.getElementById('mobile-menu');
+        if (m) m.classList.add('hidden');
+      }
+    });
   },
 
   async load() {
@@ -124,14 +114,18 @@ const ContentPage = {
     }
 
     try {
-      // Fetch content + sections list in parallel.
-      const [item, sections] = await Promise.all([
+      // Fetch content + flat sections + tree in parallel. The flat list lets us
+      // resolve the parent section by id even when it's a nested sub-section; the
+      // tree feeds NavBuilder so the top-level nav matches the home page (with
+      // dropdowns for parent sections that have children).
+      const [item, sections, tree] = await Promise.all([
         window.Api.getContentById(this.state.id, { lang: this.state.lang }),
-        window.Api.getSectionsWithContents({ lang: this.state.lang })
+        window.Api.getSectionsWithContents({ lang: this.state.lang }),
+        window.Api.getSectionsTreeWithContents({ lang: this.state.lang })
       ]);
 
       const parentSection = sections.find(s => s.id === item.sectionId);
-      this.rebuildNav(sections, parentSection ? parentSection.slug : null);
+      this.rebuildNav(tree, parentSection ? parentSection.slug : null);
 
       // Update breadcrumb + back link
       const breadcrumbSection = document.getElementById('breadcrumb-section');
@@ -165,11 +159,11 @@ const ContentPage = {
     // in the body already cover that role, so showing it twice would be a duplicate.
     const headerHtml = `
       <header class="mb-10">
-        ${sectionLabel ? `<div class="inline-flex items-center gap-2 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">${sectionLabel}</div>` : ''}
-        <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight mb-4">${escapeHtml(item.title)}</h1>
-        ${date ? `<div class="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+        ${sectionLabel ? `<span class="badge badge-brand mb-5">${sectionLabel}</span>` : ''}
+        <h1 class="section-title leading-tight mb-4">${escapeHtml(item.title)}</h1>
+        ${date ? `<div class="text-sm text-[color:var(--color-text-muted)] flex items-center gap-2 font-medium">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-          <span>${escapeHtml(date)}</span>
+          <span class="tabular-nums">${escapeHtml(date)}</span>
         </div>` : ''}
       </header>
     `;
@@ -204,13 +198,13 @@ const ContentPage = {
     if (b.type === 'image') {
       const url = window.Api.resolveMediaUrl(b.url);
       return `
-        <div class="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm bg-slate-100 dark:bg-slate-800">
-          <img src="${escapeAttr(url)}" alt="" data-fallback class="w-full h-auto" />
-        </div>
+        <figure class="rounded-xl overflow-hidden border border-[color:var(--color-border)] bg-[color:var(--color-bg-tertiary)] shadow-sm">
+          <img src="${escapeAttr(url)}" alt="" data-fallback class="w-full h-auto block" />
+        </figure>
       `;
     }
     return `
-      <div class="prose-content text-slate-700 dark:text-slate-300 leading-relaxed text-base sm:text-lg">
+      <div class="prose-content">
         ${this.renderText(b.value)}
       </div>
     `;

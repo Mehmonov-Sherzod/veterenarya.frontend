@@ -17,7 +17,34 @@ const LabHeadsPage = {
     this.bindLanguageSwitcher();
     this.bindMobileMenu();
 
+    // Build the dynamic top-level section nav (same hierarchy that index.html shows),
+    // so visitors keep their place across the site instead of seeing a stripped-down nav.
+    this.loadAndRenderNav().catch(err => console.error('nav:', err));
+
     await this.load();
+  },
+
+  async loadAndRenderNav() {
+    if (!window.NavBuilder) return;
+    try {
+      const tree = await window.Api.getSectionsTreeWithContents({ lang: this.state.lang });
+      window.NavBuilder.render({
+        rootSections: Array.isArray(tree) ? tree : [],
+        desktopNav: document.getElementById('primary-nav'),
+        mobileNav: document.getElementById('mobile-nav-list'),
+        // Insert dynamic links right before the static "Bo'lim boshliqlari" anchor so
+        // they sit in the same position as on the home page (between Home and Heads).
+        desktopAnchor: document.querySelector('#primary-nav a[href="lab-heads.html"]'),
+        mobileAnchor: document.querySelector('#mobile-nav-list a[href="lab-heads.html"]'),
+        activeSlug: null,
+        onMobileLinkClick: () => {
+          const m = document.getElementById('mobile-menu');
+          if (m) m.classList.add('hidden');
+        }
+      });
+    } catch (err) {
+      console.warn('Section nav lookup failed:', err.message);
+    }
   },
 
   applyTranslations() {
@@ -30,9 +57,9 @@ const LabHeadsPage = {
       if (value !== null) el.textContent = value;
     });
 
-    const flagMap = { uz: "🇺🇿 UZ", ru: "🇷🇺 RU", en: "🇬🇧 EN" };
+    const codeMap = { uz: "UZ", ru: "RU", en: "EN" };
     const lc = document.getElementById('lang-current');
-    if (lc) lc.textContent = flagMap[this.state.lang] || flagMap.uz;
+    if (lc) lc.textContent = codeMap[this.state.lang] || codeMap.uz;
 
     document.querySelectorAll('.lang-option').forEach(b =>
       b.classList.toggle('active', b.dataset.lang === this.state.lang));
@@ -84,6 +111,8 @@ const LabHeadsPage = {
         localStorage.setItem(window.AppConfig.LANGUAGE_STORAGE_KEY, lang);
         this.applyTranslations();
         this.render();
+        this.loadAndRenderNav().catch(err => console.error('nav:', err));
+        this.load();
         menu.classList.add('hidden');
       });
     });
@@ -102,7 +131,11 @@ const LabHeadsPage = {
     const errorBox = document.getElementById('lab-heads-error');
 
     try {
-      this.state.items = await window.Api.getLabHeads();
+      // Section-linked heads are surfaced inline at the top of their section page;
+      // this public list shows only the heads that belong to general leadership
+      // (no sectionId), so they don't appear twice.
+      const all = await window.Api.getLabHeads({ lang: this.state.lang });
+      this.state.items = (all || []).filter(h => h.sectionId == null);
       errorBox.classList.add('hidden');
 
       if (!this.state.items.length) {
@@ -123,45 +156,71 @@ const LabHeadsPage = {
     const list = document.getElementById('lab-heads-list');
     if (!list) return;
 
+    // Switch the container from a multi-column grid to a centered single-column
+    // stack, then render each leader as a large hero-style card mirroring the
+    // section-head card on section pages.
+    list.className = 'leader-list';
+
     const escape = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-    const initials = (name) => name.trim().split(/\s+/).map(w => w[0] || '').slice(0, 2).join('').toUpperCase();
-    const palette = ['from-brand-500 to-brand-700', 'from-warm-500 to-warm-700', 'from-emerald-500 to-emerald-700'];
+    const initials = (name) => (name || '?').trim().split(/\s+/).map(w => w[0] || '').slice(0, 2).join('').toUpperCase();
 
     const phoneLabel = window.t('lab_heads.phone_label', this.state.lang);
     const hoursLabel = window.t('lab_heads.hours_label', this.state.lang);
 
-    list.innerHTML = this.state.items.map((h, i) => {
+    list.innerHTML = this.state.items.map(h => {
       const phoneHref = 'tel:' + (h.phone || '').replace(/\s+/g, '');
       const photoSrc = h.photoUrl ? window.Api.resolveMediaUrl(h.photoUrl) : '';
       const photoBlock = photoSrc
-        ? `<img src="${escape(photoSrc)}" alt="${escape(h.fullName)}" class="w-full h-full object-cover" />`
-        : `<div class="w-full h-full bg-gradient-to-br ${palette[i % palette.length]} flex items-center justify-center text-white font-display font-bold text-5xl">${escape(initials(h.fullName))}</div>`;
+        ? `<img src="${escape(photoSrc)}" alt="${escape(h.fullName)}" loading="lazy" />`
+        : `<div class="leader-hero-initials">${escape(initials(h.fullName))}</div>`;
+
+      const emailLabel = window.t('lab_heads.email_label', this.state.lang) || 'Email';
+
+      const phoneBlock = h.phone ? `
+        <div class="leader-hero-contact">
+          <div class="leader-hero-contact-ico brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          </div>
+          <div>
+            <div class="leader-hero-contact-label">${escape(phoneLabel)}</div>
+            <a href="${escape(phoneHref)}" class="leader-hero-contact-value">${escape(h.phone)}</a>
+          </div>
+        </div>` : '';
+
+      const emailBlock = h.email ? `
+        <div class="leader-hero-contact">
+          <div class="leader-hero-contact-ico brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <div class="leader-hero-contact-label">${escape(emailLabel)}</div>
+            <a href="mailto:${escape(h.email)}" class="leader-hero-contact-value">${escape(h.email)}</a>
+          </div>
+        </div>` : '';
+
+      const hoursBlock = h.receptionHours ? `
+        <div class="leader-hero-contact">
+          <div class="leader-hero-contact-ico accent">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <div class="leader-hero-contact-label">${escape(hoursLabel)}</div>
+            <div class="leader-hero-contact-value">${escape(h.receptionHours)}</div>
+          </div>
+        </div>` : '';
+
+      const filledCount = [h.phone, h.email, h.receptionHours].filter(Boolean).length;
+      const contactsBlock = filledCount > 0
+        ? `<div class="leader-hero-contacts${filledCount >= 2 ? ' has-two' : ''}">${phoneBlock}${emailBlock}${hoursBlock}</div>`
+        : '';
+
       return `
-        <article class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
-          <div class="aspect-[4/3] bg-slate-100 dark:bg-slate-900 overflow-hidden">${photoBlock}</div>
-          <div class="p-6">
-            <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">${escape(h.fullName)}</h3>
-            ${h.department ? `<div class="text-sm text-brand-700 dark:text-brand-400 font-medium mt-1 mb-4">${escape(h.department)}</div>` : '<div class="mb-4"></div>'}
-            <div class="space-y-3 text-sm">
-              <div class="flex items-start gap-3">
-                <div class="w-9 h-9 rounded-lg bg-brand-50 dark:bg-brand-900/40 flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                </div>
-                <div class="min-w-0">
-                  <div class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">${escape(phoneLabel)}</div>
-                  <a href="${escape(phoneHref)}" class="text-slate-900 dark:text-white font-medium hover:text-brand-600 dark:hover:text-brand-400 transition">${escape(h.phone)}</a>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <div class="w-9 h-9 rounded-lg bg-warm-50 dark:bg-warm-700/30 flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-warm-600 dark:text-warm-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <div class="min-w-0">
-                  <div class="text-xs text-slate-500 dark:text-slate-400 mb-0.5">${escape(hoursLabel)}</div>
-                  <div class="text-slate-900 dark:text-white font-medium">${escape(h.receptionHours)}</div>
-                </div>
-              </div>
-            </div>
+        <article class="leader-hero">
+          <div class="leader-hero-photo">${photoBlock}</div>
+          <div class="leader-hero-body">
+            <h2 class="leader-hero-name">${escape(h.fullName)}</h2>
+            ${h.department ? `<div class="leader-hero-role">${escape(h.department)}</div>` : ''}
+            ${contactsBlock}
           </div>
         </article>`;
     }).join('');

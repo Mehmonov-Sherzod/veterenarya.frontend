@@ -35,8 +35,10 @@ const SectionPage = {
       rootSections,
       desktopNav: document.getElementById('primary-nav'),
       mobileNav: document.getElementById('mobile-nav-list'),
-      desktopAnchor: document.getElementById('nav-contact'),
-      mobileAnchor: document.getElementById('mobile-nav-contact'),
+      // Dynamic section links sit between "Home" and "Bo'lim boshliqlari"
+      // so the order matches the home page exactly.
+      desktopAnchor: document.querySelector('#primary-nav a[href="lab-heads.html"]'),
+      mobileAnchor: document.querySelector('#mobile-nav-list a[href="lab-heads.html"]'),
       activeSlug: this.state.slug,
       onMobileLinkClick: () => {
         const menu = document.getElementById('mobile-menu');
@@ -72,8 +74,8 @@ const SectionPage = {
       const value = window.t(key, this.state.lang);
       if (value !== null) el.textContent = value;
     });
-    const flagMap = { uz: "🇺🇿 UZ", ru: "🇷🇺 RU", en: "🇬🇧 EN" };
-    document.getElementById('lang-current').textContent = flagMap[this.state.lang] || flagMap.uz;
+    const codeMap = { uz: "UZ", ru: "RU", en: "EN" };
+    document.getElementById('lang-current').textContent = codeMap[this.state.lang] || codeMap.uz;
     document.querySelectorAll('.lang-option').forEach(b =>
       b.classList.toggle('active', b.dataset.lang === this.state.lang));
   },
@@ -142,21 +144,152 @@ const SectionPage = {
       this.renderHeader(section);
       this.renderBody(section);
       this.bindImageFallbacks();
+
+      // Heads are fetched separately (lightweight) — render asynchronously so the page is
+      // already interactive when the head card slides in above the body.
+      this.loadAndRenderHeads(section.id, section.title).catch(err => console.error('lab-heads:', err));
     } catch (err) {
       console.error(err);
       errorBox.classList.remove('hidden');
     }
   },
 
+  async loadAndRenderHeads(sectionId, sectionTitle) {
+    // Use the new dedicated /section-heads endpoint — distinct from the
+    // top-level Rahbariyat (LabHead) listing on /lab-heads.html.
+    const head = await window.Api.getSectionHead({ lang: this.state.lang, sectionId });
+    const slot = document.getElementById('section-heads');
+    if (!slot) return;
+    if (!head) { slot.innerHTML = ''; return; }
+    slot.innerHTML = this.renderHeadHero(head, sectionTitle);
+    this.bindImageFallbacks();
+  },
+
+  renderHeadHero(head, sectionTitle) {
+    const photo = head.photoUrl ? window.Api.resolveMediaUrl(head.photoUrl) : '';
+    const eyebrowLabel = window.t('section.head_title', this.state.lang) || "Bo'lim boshlig'i";
+    const phoneLabel = window.t('lab_heads.phone_label', this.state.lang) || 'Telefon';
+    const hoursLabel = window.t('lab_heads.hours_label', this.state.lang) || 'Qabul vaqti';
+
+    const initials = String(head.fullName || '')
+      .trim().split(/\s+/).map(w => w[0] || '').slice(0, 2).join('').toUpperCase();
+
+    const photoBlock = photo
+      ? `<img src="${escapeAttr(photo)}" alt="${escapeAttr(head.fullName)}" loading="eager" data-fallback />`
+      : `<div class="section-head-hero-initials">${escapeHtml(initials || '·')}</div>`;
+
+    const emailLabel = window.t('lab_heads.email_label', this.state.lang) || 'Email';
+
+    const phoneBlock = head.phone ? `
+      <div class="section-head-hero-contact">
+        <div class="section-head-hero-contact-ico brand">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+        </div>
+        <div>
+          <div class="section-head-hero-contact-label">${escapeHtml(phoneLabel)}</div>
+          <a href="tel:${escapeAttr(String(head.phone).replace(/\s+/g, ''))}" class="section-head-hero-contact-value">${escapeHtml(head.phone)}</a>
+        </div>
+      </div>` : '';
+
+    const emailBlock = head.email ? `
+      <div class="section-head-hero-contact">
+        <div class="section-head-hero-contact-ico brand">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <div>
+          <div class="section-head-hero-contact-label">${escapeHtml(emailLabel)}</div>
+          <a href="mailto:${escapeAttr(head.email)}" class="section-head-hero-contact-value">${escapeHtml(head.email)}</a>
+        </div>
+      </div>` : '';
+
+    const hoursValue = head.workingHours || head.receptionHours;
+    const hoursBlock = hoursValue ? `
+      <div class="section-head-hero-contact">
+        <div class="section-head-hero-contact-ico accent">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <div class="section-head-hero-contact-label">${escapeHtml(hoursLabel)}</div>
+          <div class="section-head-hero-contact-value">${escapeHtml(hoursValue)}</div>
+        </div>
+      </div>` : '';
+
+    const filledCount = [head.phone, head.email, hoursValue].filter(Boolean).length;
+    const contactsBlock = filledCount > 0
+      ? `<div class="section-head-hero-contacts${filledCount >= 2 ? ' has-two' : ''}">${phoneBlock}${emailBlock}${hoursBlock}</div>`
+      : '';
+
+    const sectionLine = sectionTitle
+      ? `<div class="section-head-hero-section">${escapeHtml(sectionTitle)}</div>`
+      : '';
+
+    return `
+      <section class="section-head-hero" aria-label="${escapeAttr(eyebrowLabel)}">
+        ${sectionLine}
+        <span class="section-head-hero-eyebrow">${escapeHtml(eyebrowLabel)}</span>
+        <div class="section-head-hero-photo">${photoBlock}</div>
+        <h2 class="section-head-hero-name">${escapeHtml(head.fullName)}</h2>
+        ${head.department ? `<div class="section-head-hero-dept">${escapeHtml(head.department)}</div>` : ''}
+        ${contactsBlock}
+      </section>
+    `;
+  },
+
+  renderHeadCard(head) {
+    const photo = head.photoUrl ? window.Api.resolveMediaUrl(head.photoUrl) : '';
+    const phoneLabel = window.t('lab_heads.phone_label', this.state.lang) || 'Telefon';
+    const hoursLabel = window.t('lab_heads.hours_label', this.state.lang) || 'Qabul vaqti';
+    const photoBlock = photo
+      ? `<img src="${escapeAttr(photo)}" alt="${escapeAttr(head.fullName)}" loading="lazy" data-fallback class="w-full h-full object-cover" />`
+      : `<div class="w-full h-full flex items-center justify-center img-fallback">
+           <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+         </div>`;
+
+    const phoneBlock = head.phone ? `
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-md bg-[color:var(--color-brand-fade)] flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[color:var(--color-brand-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs uppercase tracking-wider font-bold text-[color:var(--color-text-muted)]">${escapeHtml(phoneLabel)}</div>
+                <a href="tel:${escapeAttr(head.phone)}" class="font-semibold text-[color:var(--color-text-primary)] hover:text-[color:var(--color-brand-primary)] transition">${escapeHtml(head.phone)}</a>
+              </div>
+            </div>` : '';
+    const hoursBlock = head.receptionHours ? `
+            <div class="flex items-start gap-3">
+              <div class="w-9 h-9 rounded-md bg-[color:var(--color-accent-soft)] flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[color:var(--color-accent-deep)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs uppercase tracking-wider font-bold text-[color:var(--color-text-muted)]">${escapeHtml(hoursLabel)}</div>
+                <div class="font-semibold text-[color:var(--color-text-primary)]">${escapeHtml(head.receptionHours)}</div>
+              </div>
+            </div>` : '';
+    const contactsBlock = (phoneBlock || hoursBlock)
+      ? `<div class="space-y-3 text-sm">${phoneBlock}${hoursBlock}</div>`
+      : '';
+
+    return `
+      <article class="card card-hover overflow-hidden">
+        <div class="aspect-[4/3] bg-[color:var(--color-bg-tertiary)] overflow-hidden">${photoBlock}</div>
+        <div class="p-6">
+          <h3 class="font-display font-bold text-lg text-[color:var(--color-text-primary)]">${escapeHtml(head.fullName)}</h3>
+          ${head.department ? `<div class="text-sm text-[color:var(--color-brand-primary)] font-semibold mt-1 mb-4">${escapeHtml(head.department)}</div>` : '<div class="mb-4"></div>'}
+          ${contactsBlock}
+        </div>
+      </article>
+    `;
+  },
+
   renderBreadcrumb(section, ancestors) {
     const wrap = document.getElementById('breadcrumb');
     if (!wrap) return;
     const homeLabel = window.t('nav.home', this.state.lang) || 'Bosh sahifa';
-    const arrow = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`;
+    const arrow = `<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>`;
     const parts = [
-      `<a href="index.html" class="hover:text-brand-600 dark:hover:text-brand-400 transition">${escapeHtml(homeLabel)}</a>`,
-      ...ancestors.map(a => `<a href="section.html?slug=${escapeAttr(a.slug)}" class="hover:text-brand-600 dark:hover:text-brand-400 transition">${escapeHtml(a.title)}</a>`),
-      `<span class="text-slate-700 dark:text-slate-200 font-medium">${escapeHtml(section.title)}</span>`
+      `<a href="index.html">${escapeHtml(homeLabel)}</a>`,
+      ...ancestors.map(a => `<a href="section.html?slug=${escapeAttr(a.slug)}">${escapeHtml(a.title)}</a>`),
+      `<span class="current">${escapeHtml(section.title)}</span>`
     ];
     wrap.innerHTML = parts.join(arrow);
   },
@@ -173,10 +306,8 @@ const SectionPage = {
     if (itemsCount > 0 || childrenCount === 0) meta.push(`${itemsCount} ${escapeHtml(blocksLabel)}`);
 
     header.innerHTML = `
-      <div class="inline-flex items-center gap-2 bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">
-        <span>${meta.join(' · ')}</span>
-      </div>
-      <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">${escapeHtml(section.title)}</h1>
+      <span class="badge badge-brand mb-4">${meta.join(' · ')}</span>
+      <h1 class="section-title">${escapeHtml(section.title)}</h1>
     `;
   },
 
@@ -191,16 +322,23 @@ const SectionPage = {
 
     let blocksHtml = '';
     if (items.length > 0) {
-      blocksHtml = `<div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-7">${
-        items.map((item) => this.renderItemCard(item)).join('')
-      }</div>`;
+      blocksHtml = `
+        <section>
+          <div class="section-divider">
+            <span class="section-divider-bar"></span>
+            <h2 class="section-divider-title">${escapeHtml(window.t('sections.blocks_title', this.state.lang) || "Materiallar")}</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">${
+            items.map((item) => this.renderItemCard(item)).join('')
+          }</div>
+        </section>`;
     } else if (children.length === 0) {
       blocksHtml = `
-        <div class="text-center py-12 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-          <div class="mx-auto w-14 h-14 rounded-2xl bg-brand-100 dark:bg-brand-900/40 flex items-center justify-center mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-brand-600 dark:text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+        <div class="text-center py-16 bg-[color:var(--color-bg-secondary)] rounded-xl border border-[color:var(--color-border)]">
+          <div class="mx-auto w-14 h-14 rounded-xl bg-[color:var(--color-brand-fade)] flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-[color:var(--color-brand-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
           </div>
-          <p class="text-slate-500 dark:text-slate-400">${escapeHtml(window.t('sections.empty_in_section', this.state.lang) || "Bu bo'limda hali kontent yo'q.")}</p>
+          <p class="text-[color:var(--color-text-secondary)]">${escapeHtml(window.t('sections.empty_in_section', this.state.lang) || "Bu bo'limda hali kontent yo'q.")}</p>
         </div>`;
     }
 
@@ -210,12 +348,12 @@ const SectionPage = {
   renderChildrenSection(children) {
     const subTitle = window.t('sections.subsections_title', this.state.lang) || 'Ichki bo\'limlar';
     return `
-      <section class="mb-12 sm:mb-16">
-        <h2 class="font-display text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-          <span class="w-1.5 h-6 bg-brand-500 rounded-full"></span>
-          ${escapeHtml(subTitle)}
-        </h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-7">
+      <section class="mb-12 lg:mb-16">
+        <div class="section-divider">
+          <span class="section-divider-bar"></span>
+          <h2 class="section-divider-title">${escapeHtml(subTitle)}</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           ${children.map((child, idx) => this.renderChildCard(child, idx)).join('')}
         </div>
       </section>
@@ -240,25 +378,22 @@ const SectionPage = {
       : `${items.length} ${escapeHtml(blocksLabel)}`;
 
     return `
-      <a href="section.html?slug=${escapeAttr(child.slug)}"
-         class="group relative flex flex-col bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-md hover:shadow-2xl hover:shadow-brand-200/40 dark:hover:shadow-brand-900/40 hover:-translate-y-2 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300">
-        <div class="aspect-[16/10] bg-gradient-to-br from-brand-100 via-emerald-100 to-warm-100 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
+      <a href="section.html?slug=${escapeAttr(child.slug)}" class="section-card">
+        <div class="section-card-image">
           ${imageUrl
-            ? `<img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(child.title)}" loading="lazy" data-fallback class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />`
-            : `<div class="w-full h-full flex items-center justify-center text-brand-700/50 dark:text-brand-400/40">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            ? `<img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(child.title)}" loading="lazy" data-fallback />`
+            : `<div class="w-full h-full flex items-center justify-center text-[color:var(--color-brand-primary)] opacity-30">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                </div>`}
-          <span class="absolute top-3 left-3 inline-flex items-center gap-1.5 bg-white/95 dark:bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-full text-sm font-bold text-brand-700 dark:text-brand-300">
-            #${number}
-          </span>
+          <span class="section-card-number">${number}</span>
         </div>
-        <div class="p-7 flex flex-col flex-1">
-          <h3 class="font-display text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">${escapeHtml(child.title)}</h3>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mb-5">${meta}</p>
-          <div class="mt-auto inline-flex items-center gap-2 text-base font-semibold text-brand-600 dark:text-brand-400 group-hover:gap-3 transition-all">
+        <div class="section-card-body">
+          <h3 class="section-card-title">${escapeHtml(child.title)}</h3>
+          <p class="section-card-meta">${meta}</p>
+          <span class="section-card-cta">
             <span>${escapeHtml(openLabel)}</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-          </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </span>
         </div>
       </a>
     `;
@@ -270,19 +405,17 @@ const SectionPage = {
     const detailsLabel = window.t('section.details', this.state.lang) || 'Batafsil';
 
     return `
-      <article class="flex flex-col bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-2 hover:border-brand-300 dark:hover:border-brand-700 transition-all duration-300 group">
-        <a href="content.html?id=${encodeURIComponent(item.id)}" class="block aspect-[16/10] bg-slate-100 dark:bg-slate-800 overflow-hidden">
-          <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(item.title)}" loading="lazy" data-fallback class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+      <article class="content-card">
+        <a href="content.html?id=${encodeURIComponent(item.id)}" class="block aspect-[16/10] bg-[color:var(--color-bg-tertiary)] overflow-hidden">
+          <img src="${escapeAttr(imageUrl)}" alt="${escapeAttr(item.title)}" loading="lazy" data-fallback class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
         </a>
-        <div class="p-7 flex flex-col flex-1">
-          ${date ? `<div class="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-4">${escapeHtml(date)}</div>` : ''}
-          <h3 class="font-display text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug mb-6 line-clamp-3 group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors min-h-[4.6rem]">${escapeHtml(item.title)}</h3>
-          <div class="mt-auto">
-            <a href="content.html?id=${encodeURIComponent(item.id)}" class="inline-flex items-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white text-base font-semibold rounded-xl transition shadow-md hover:shadow-lg">
-              <span>${escapeHtml(detailsLabel)}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
-          </div>
+        <div class="p-6 flex flex-col flex-1">
+          ${date ? `<div class="text-xs uppercase tracking-wider font-bold text-[color:var(--color-text-muted)] mb-3">${escapeHtml(date)}</div>` : ''}
+          <h3 class="font-display text-lg font-bold text-[color:var(--color-text-primary)] leading-snug mb-5 line-clamp-3">${escapeHtml(item.title)}</h3>
+          <a href="content.html?id=${encodeURIComponent(item.id)}" class="btn btn-secondary btn-sm mt-auto self-start">
+            <span>${escapeHtml(detailsLabel)}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
         </div>
       </article>
     `;

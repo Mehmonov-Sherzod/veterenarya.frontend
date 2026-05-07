@@ -128,9 +128,14 @@ window.NavBuilder = (() => {
     return group;
   }
 
+  // Sections matching this slug/title pattern are surfaced via the dedicated
+  // /news.html link in the static nav, so we skip them here to avoid duplicates.
+  const NEWS_RE = /news|xabar|yangilik/i;
+  const isNewsSection = (s) => NEWS_RE.test(s?.slug || '') || NEWS_RE.test(s?.title || '');
+
   function render({ rootSections, desktopNav, mobileNav, desktopAnchor, mobileAnchor, activeSlug = null, onMobileLinkClick = null }) {
     const opts = { activeSlug, onMobileLinkClick };
-    const list = Array.isArray(rootSections) ? rootSections : [];
+    const list = (Array.isArray(rootSections) ? rootSections : []).filter(s => !isNewsSection(s));
 
     if (desktopNav) {
       desktopNav.querySelectorAll('.dynamic-section-link').forEach(el => el.remove());

@@ -52,16 +52,38 @@ window.Api = {
   },
 
   /**
-   * Fetch all active laboratory department heads.
+   * Fetch active top-level Rahbariyat entries (general leadership). Section heads
+   * use the separate /section-heads endpoint and live in their own model.
    */
-  async getLabHeads() {
-    const url = `${this.base()}/api/v1/lab-heads?onlyActive=true`;
-    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+  async getLabHeads({ lang = 'uz', sectionId = null } = {}) {
+    const qs = new URLSearchParams({ onlyActive: 'true', lang });
+    if (sectionId !== null && sectionId !== undefined) qs.set('sectionId', String(sectionId));
+    const url = `${this.base()}/api/v1/lab-heads?${qs.toString()}`;
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'Accept-Language': lang }
+    });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
       throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
     }
     return res.json();
+  },
+
+  /**
+   * Fetch the SectionHead (Bo'lim raxbari) tied to a specific dynamic section.
+   * Returns at most one record (sections have unique heads). Used by the public
+   * section page to render the centered hero card.
+   */
+  async getSectionHead({ lang = 'uz', sectionId } = {}) {
+    if (sectionId === null || sectionId === undefined) return null;
+    const qs = new URLSearchParams({ onlyActive: 'true', lang, sectionId: String(sectionId) });
+    const url = `${this.base()}/api/v1/section-heads?${qs.toString()}`;
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'Accept-Language': lang }
+    });
+    if (!res.ok) return null;
+    const list = await res.json();
+    return Array.isArray(list) && list.length > 0 ? list[0] : null;
   },
 
   /**
