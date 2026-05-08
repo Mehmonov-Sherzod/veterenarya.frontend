@@ -38,8 +38,8 @@ window.I18N = {
     },
     hero: {
       badge: "Davlat raqamli monitoring platformasi",
-      title1: "Hayvonlar salomatligi va",
-      title2: "oziq-ovqat xavfsizligi",
+      title1: "Respublika hayvonlar kasalliklari tashxisi va",
+      title2: "oziq-ovqat mahsulotlari xavfsizligi davlat markazi",
       subtitle: "Respublika bo'ylab veterinariya nazorati va laboratoriya tashxisi",
       description: "Respublika markazi fuqarolar, fermerlar va biznes uchun ishonchli veterinariya xizmatlari, oziq-ovqat xavfsizligi sertifikatlari hamda epizootik nazoratni ta'minlaydi.",
       cta_primary: "Xizmatlarimiz",
@@ -159,8 +159,8 @@ window.I18N = {
     },
     hero: {
       badge: "Государственная цифровая платформа мониторинга",
-      title1: "Здоровье животных и",
-      title2: "безопасность продуктов",
+      title1: "Республиканский центр диагностики болезней животных и",
+      title2: "безопасности продовольственных продуктов",
       subtitle: "Ветеринарный надзор и лабораторная диагностика по всей республике",
       description: "Республиканский центр обеспечивает гражданам, фермерам и бизнесу надежные ветеринарные услуги, сертификаты безопасности продуктов и эпизоотический контроль.",
       cta_primary: "Наши услуги",
@@ -280,8 +280,8 @@ window.I18N = {
     },
     hero: {
       badge: "National Digital Monitoring Platform",
-      title1: "Animal health and",
-      title2: "food product safety",
+      title1: "Republic State Center for Animal Disease Diagnostics and",
+      title2: "Food Product Safety",
       subtitle: "Veterinary oversight and laboratory diagnostics across the republic",
       description: "The Republican State Center provides citizens, farmers, and businesses with reliable veterinary services, food safety certification, and epizootic monitoring.",
       cta_primary: "Our services",
