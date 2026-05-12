@@ -3236,3 +3236,551 @@ section:has(.atmosphere) .section-lede { color: #E8EFF8; text-shadow: 0 1px 8px 
 
 /* Map iframe override (no dark filter from override block) */
 .map-section iframe { filter: none !important; }
+
+/* =============================================================================
+   24. Sree-Abirami-inspired design pass
+       Deep royal blue gradient + hexagonal molecular pattern overlay,
+       yellow-green accent bar, white rounded pill CTA, navy footer with same
+       hex backdrop. Keeps all existing copy intact — purely visual.
+   ============================================================================= */
+:root {
+  /* Reinforce the deep-blue + lime-yellow palette without removing the old vars */
+  --abr-blue-1: #0A2D6E;
+  --abr-blue-2: #143E94;
+  --abr-blue-3: #1F5BB8;
+  --abr-yellow: #D4FF3A;
+  --abr-yellow-soft: #EEFFB4;
+}
+
+/* Hexagonal molecular pattern — inline SVG data URI so it ships with the CSS */
+.abr-hex-bg {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1.2'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/><line x1='100' y1='5' x2='100' y2='40'/><line x1='195' y1='55' x2='165' y2='75'/><line x1='195' y1='150' x2='165' y2='135'/><line x1='100' y1='200' x2='100' y2='170'/><line x1='5' y1='150' x2='35' y2='135'/><line x1='5' y1='55' x2='35' y2='75'/></svg>");
+  background-size: 220px 190px;
+  background-repeat: repeat;
+}
+
+/* ── HERO — blue gradient + hex pattern over the photo ── */
+.hero {
+  background:
+    linear-gradient(120deg, rgba(10, 45, 110, 0.92) 0%, rgba(20, 62, 148, 0.86) 45%, rgba(31, 91, 184, 0.70) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(255,255,255,0.10)' stroke-width='1.2'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/><line x1='100' y1='5' x2='100' y2='40'/><line x1='195' y1='55' x2='165' y2='75'/><line x1='195' y1='150' x2='165' y2='135'/><line x1='100' y1='200' x2='100' y2='170'/><line x1='5' y1='150' x2='35' y2='135'/><line x1='5' y1='55' x2='35' y2='75'/></svg>"),
+    var(--abr-blue-1) !important;
+  background-size: cover, 200px 173px, auto;
+  background-position: center, top left, center;
+}
+.hero-bg-layer { inset: 0 !important; overflow: hidden; }
+.hero-bg-layer img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  object-fit: cover !important;
+  object-position: left center !important;
+  transform: scale(1.05) !important;
+  filter: brightness(1) saturate(1.20) contrast(1.05) !important;
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+.hero-bg-veil {
+  background:
+    linear-gradient(95deg, rgba(10, 45, 110, 0.55) 0%, rgba(20, 62, 148, 0.25) 50%, rgba(20, 62, 148, 0.10) 100%) !important;
+}
+
+/* Hex pattern clearly visible across the full hero — lime-tinted strokes on
+   screen blend so the molecular grid reads on top of the microscope photo. */
+.hero-bg-layer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(212,255,58,0.45)' stroke-width='1.8'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/><line x1='100' y1='5' x2='100' y2='40'/><line x1='195' y1='55' x2='165' y2='75'/><line x1='195' y1='150' x2='165' y2='135'/><line x1='100' y1='200' x2='100' y2='170'/><line x1='5' y1='150' x2='35' y2='135'/><line x1='5' y1='55' x2='35' y2='75'/></svg>");
+  background-size: 200px 173px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  opacity: 0.65;
+}
+
+/* Hero eyebrow — vertical yellow bar prefix like the reference */
+.hero-eyebrow {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 4px 0 4px 14px !important;
+  color: #FFFFFF !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.18em !important;
+  font-weight: 700 !important;
+  font-size: 12.5px !important;
+  position: relative;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.hero-eyebrow::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 4px;
+  background: var(--abr-yellow);
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(212, 255, 58, 0.55);
+  animation: none !important;
+  height: auto !important;
+}
+
+/* Hero h1 — pure white, bigger, no accent gradient on second line */
+.hero h1 > span:first-child,
+.hero h1 > span.accent-bar,
+.hero h1 .hero-line-1,
+.hero h1 .hero-line-2 {
+  color: #FFFFFF !important;
+  background: none !important;
+  -webkit-text-fill-color: #FFFFFF !important;
+  filter: none !important;
+}
+.hero h1 .accent-bar { background-clip: initial !important; -webkit-background-clip: initial !important; }
+.hero h1 .accent-bar::after { display: none !important; }
+
+/* CTA buttons — white rounded pill with deep-blue text (primary) and ghost (secondary) */
+.hero .btn,
+.hero .btn-primary,
+.hero .btn-secondary {
+  --color: var(--abr-blue-2);
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 14px 32px !important;
+  border-radius: 999px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  letter-spacing: 0.01em !important;
+  border: 2px solid transparent !important;
+  background: #FFFFFF !important;
+  color: var(--abr-blue-2) !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18) !important;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.hero .btn:hover,
+.hero .btn-primary:hover {
+  background: var(--abr-yellow) !important;
+  color: var(--abr-blue-1) !important;
+  box-shadow: 0 10px 28px rgba(212, 255, 58, 0.40) !important;
+}
+.hero .btn-secondary {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+}
+.hero .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: var(--abr-yellow) !important;
+  color: var(--abr-yellow) !important;
+}
+.hero .btn::before,
+.hero .btn::after { display: none !important; }
+
+/* ── FOOTER — deep blue gradient + hex pattern + yellow top accent ── */
+.site-footer {
+  background:
+    linear-gradient(135deg, var(--abr-blue-1) 0%, var(--abr-blue-2) 60%, var(--abr-blue-3) 100%) !important;
+  position: relative;
+  border-top: 4px solid var(--abr-yellow) !important;
+}
+.site-footer::before {
+  content: '';
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(255,255,255,0.08)' stroke-width='1.2'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/></svg>") !important;
+  background-size: 220px 190px !important;
+  background-repeat: repeat !important;
+  opacity: 0.7;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.site-footer h4 {
+  color: var(--abr-yellow) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+.site-footer .footer-brand-emblem {
+  background: #FFFFFF !important;
+  border: 3px solid var(--abr-yellow) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.30), 0 0 0 1px rgba(212, 255, 58, 0.40) !important;
+}
+.site-footer .footer-brand-text {
+  color: #FFFFFF !important;
+  font-size: 15px !important;
+}
+.site-footer .footer-tagline {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.site-footer a { color: rgba(255, 255, 255, 0.85) !important; }
+.site-footer a:hover { color: var(--abr-yellow) !important; }
+.site-footer .footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.20) !important;
+  color: rgba(255, 255, 255, 0.80) !important;
+}
+
+/* Yellow horizontal line just under the page banner — like the reference's top divider */
+header#navbar { border-bottom: 2px solid rgba(212, 255, 58, 0.45) !important; }
+
+/* Navigation accent — active link uses yellow underline */
+.nav-link.active::after {
+  background: linear-gradient(90deg, var(--abr-yellow), transparent) !important;
+  box-shadow: 0 0 10px var(--abr-yellow) !important;
+}
+
+/* Section titles outside hero/footer keep dark theme on white page; nothing else changes. */
+
+/* =============================================================================
+   25. Apply the Abirami blue treatment site-wide
+       - every atmosphere/stats backdrop gets the same gradient + hex pattern
+       - all images are tinted into the blue palette (saturate+hue-rotate)
+       - section copy switches to white over the blue surfaces
+   ============================================================================= */
+
+/* Stats + Contact sections keep the soft light-blue palette + hex pattern */
+.stats-band,
+section#contact {
+  background:
+    linear-gradient(135deg, #E8F1FF 0%, #DCE9FB 60%, #C9DCF7 100%) !important;
+  position: relative;
+  isolation: isolate;
+}
+.stats-band::before,
+section#contact::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(20,62,148,0.10)' stroke-width='1.2'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/><line x1='100' y1='5' x2='100' y2='40'/><line x1='195' y1='55' x2='165' y2='75'/><line x1='195' y1='150' x2='165' y2='135'/><line x1='100' y1='200' x2='100' y2='170'/><line x1='5' y1='150' x2='35' y2='135'/><line x1='5' y1='55' x2='35' y2='75'/></svg>");
+  background-size: 220px 190px;
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+.stats-band-bg img {
+  filter: brightness(1.05) saturate(0.85) contrast(0.95) !important;
+  opacity: 0.18 !important;
+  mix-blend-mode: luminosity;
+}
+/* Contact backdrop image — clearly visible, only a soft blue wash on top */
+section#contact .atmosphere-img {
+  filter: brightness(1) saturate(1.10) contrast(1.05) !important;
+  opacity: 0.95 !important;
+  mix-blend-mode: normal !important;
+}
+section#contact .atmosphere-veil {
+  background:
+    linear-gradient(95deg, rgba(10, 45, 110, 0.40) 0%, rgba(20, 62, 148, 0.20) 50%, rgba(20, 62, 148, 0.10) 100%) !important;
+}
+
+/* "Asosiy faoliyat sohalari" — hidden by request */
+section#sections { display: none !important; }
+
+/* ── Header (#navbar) matches the hero/footer deep-blue + hex palette ── */
+#navbar {
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(255,255,255,0.10)' stroke-width='1.2'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/><line x1='100' y1='5' x2='100' y2='40'/><line x1='195' y1='55' x2='165' y2='75'/><line x1='195' y1='150' x2='165' y2='135'/><line x1='100' y1='200' x2='100' y2='170'/><line x1='5' y1='150' x2='35' y2='135'/><line x1='5' y1='55' x2='35' y2='75'/></svg>"),
+    linear-gradient(135deg, var(--abr-blue-1) 0%, var(--abr-blue-2) 60%, var(--abr-blue-3) 100%) !important;
+  background-size: 220px 190px, cover !important;
+  background-repeat: repeat, no-repeat !important;
+  border-bottom: 3px solid var(--abr-yellow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+#navbar.scrolled {
+  background:
+    linear-gradient(135deg, var(--abr-blue-1) 0%, var(--abr-blue-2) 60%, var(--abr-blue-3) 100%) !important;
+  border-color: var(--abr-yellow) !important;
+  box-shadow: 0 6px 24px rgba(10, 45, 110, 0.40) !important;
+}
+
+/* Brand mark on the navy nav — keep logo white background, text light */
+.brand-mark-emblem {
+  background: #FFFFFF !important;
+  border: 2px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.30), 0 0 0 1px rgba(212, 255, 58, 0.35) !important;
+}
+.brand-mark-eyebrow {
+  color: var(--abr-yellow) !important;
+  text-shadow: 0 0 12px rgba(212, 255, 58, 0.45);
+}
+.brand-mark-title {
+  color: #FFFFFF !important;
+}
+
+/* Nav links — light text, lime active accent */
+.nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.nav-link:hover {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+.nav-link.active {
+  color: var(--abr-yellow) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+.nav-link.active::after {
+  background: var(--abr-yellow) !important;
+  box-shadow: 0 0 10px rgba(212, 255, 58, 0.55) !important;
+}
+
+/* Dropdown trigger / chevron */
+.nav-dropdown-trigger {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.nav-dropdown-trigger:hover,
+.nav-dropdown.open .nav-dropdown-trigger {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+.nav-dropdown-chevron { color: rgba(255, 255, 255, 0.75) !important; }
+
+/* Language toggle on navy */
+.lang-toggle {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+.lang-toggle:hover {
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-color: var(--abr-yellow) !important;
+  color: var(--abr-yellow) !important;
+}
+
+/* Mobile menu button */
+.icon-btn {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-color: var(--abr-yellow) !important;
+  color: var(--abr-yellow) !important;
+}
+
+/* "Orqaga" / Admin panel buttons inside the navy header */
+#navbar .btn-ghost {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+}
+#navbar .btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--abr-yellow) !important;
+  color: var(--abr-yellow) !important;
+}
+
+/* Mobile menu panel matches the navy theme */
+#mobile-menu {
+  background: var(--abr-blue-1) !important;
+  border-top: 2px solid var(--abr-yellow) !important;
+}
+.mobile-nav-link {
+  color: rgba(255, 255, 255, 0.90) !important;
+}
+.mobile-nav-link:hover,
+.mobile-nav-link.active {
+  background: rgba(255, 255, 255, 0.10) !important;
+  color: var(--abr-yellow) !important;
+}
+
+/* Eyebrows and titles on light sections — dark blue copy + lime accent bar */
+section:has(> .atmosphere) .section-eyebrow,
+.stats-band .section-eyebrow {
+  color: var(--abr-blue-2) !important;
+  padding-left: 14px;
+  position: relative;
+  font-weight: 800;
+}
+section:has(> .atmosphere) .section-eyebrow::before,
+.stats-band .section-eyebrow::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 4px;
+  background: var(--abr-yellow) !important;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(212, 255, 58, 0.55);
+  height: auto !important;
+}
+section:has(> .atmosphere) .section-title,
+.stats-band .section-title {
+  color: var(--abr-blue-1) !important;
+  text-shadow: none !important;
+}
+section:has(> .atmosphere) .section-lede,
+.stats-band .section-lede {
+  color: rgba(10, 45, 110, 0.80) !important;
+  text-shadow: none !important;
+}
+
+/* Stats cards: soft light-blue surface + lime top accent, dark-blue numbers */
+.stats-band-grid { position: relative; z-index: 1; }
+.stat-item {
+  background: #EAF2FF !important;
+  border: 1px solid rgba(20, 62, 148, 0.12) !important;
+  color: var(--abr-blue-1) !important;
+  box-shadow: 0 6px 18px rgba(20, 62, 148, 0.08) !important;
+}
+.stat-item::before {
+  background: linear-gradient(90deg, var(--abr-yellow) 0%, rgba(212, 255, 58, 0.70) 50%, transparent 100%) !important;
+}
+.stat-item:hover {
+  background: #F2F7FF !important;
+  border-color: var(--abr-yellow) !important;
+  box-shadow: 0 16px 36px rgba(20, 62, 148, 0.18), 0 0 0 1px rgba(212, 255, 58, 0.55) !important;
+}
+.stat-icon {
+  background: linear-gradient(135deg, #FFFFFF, #DCE9FB) !important;
+  color: var(--abr-blue-2) !important;
+  border: 1px solid rgba(20, 62, 148, 0.18);
+}
+.stat-item:hover .stat-icon {
+  background: var(--abr-yellow) !important;
+  color: var(--abr-blue-1) !important;
+}
+.stat-value {
+  background: linear-gradient(135deg, var(--abr-blue-1) 0%, var(--abr-blue-3) 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  filter: none !important;
+}
+.stat-label {
+  color: rgba(10, 45, 110, 0.78) !important;
+}
+.stat-label::before {
+  background: linear-gradient(90deg, var(--abr-yellow), transparent) !important;
+}
+
+/* Section cards (Asosiy faoliyat sohalari) — pastel blue cards with dark blue
+   text and a lime number badge (matches the reference). */
+section:has(> .atmosphere) .section-card {
+  background: #EAF2FF !important;
+  border: 1px solid rgba(20, 62, 148, 0.14) !important;
+  color: var(--abr-blue-1) !important;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 22px rgba(20, 62, 148, 0.10) !important;
+}
+section:has(> .atmosphere) .section-card:hover {
+  background: #F3F7FF !important;
+  border-color: var(--abr-yellow) !important;
+  box-shadow: 0 18px 40px rgba(20, 62, 148, 0.18), 0 0 0 1px rgba(212, 255, 58, 0.55) !important;
+}
+section:has(> .atmosphere) .section-card-title {
+  color: var(--abr-blue-1) !important;
+}
+section:has(> .atmosphere) .section-card-meta {
+  color: rgba(10, 45, 110, 0.70) !important;
+}
+section:has(> .atmosphere) .section-card-cta {
+  color: var(--abr-blue-2) !important;
+}
+section:has(> .atmosphere) .section-card-cta:hover {
+  color: var(--abr-blue-1) !important;
+}
+section:has(> .atmosphere) .section-card-cta svg {
+  filter: none !important;
+}
+section:has(> .atmosphere) .section-card-number {
+  background: var(--abr-yellow) !important;
+  color: var(--abr-blue-1) !important;
+  border-color: var(--abr-yellow) !important;
+  font-weight: 800;
+}
+section:has(> .atmosphere) .section-card-image {
+  background: linear-gradient(155deg, #DCE9FB 0%, #C9DCF7 100%) !important;
+}
+section:has(> .atmosphere) .section-card-image img {
+  filter: brightness(0.95) saturate(1.05) !important;
+}
+
+/* Contact cards — deep blue gradient with white text + lime accent */
+section#contact .contact-card {
+  background:
+    linear-gradient(155deg, var(--abr-blue-1) 0%, var(--abr-blue-2) 60%, var(--abr-blue-3) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #FFFFFF !important;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 12px 28px rgba(10, 45, 110, 0.30) !important;
+  overflow: hidden;
+}
+section#contact .contact-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 173' fill='none' stroke='rgba(255,255,255,0.10)' stroke-width='1.2'><polygon points='100,5 195,55 195,150 100,200 5,150 5,55'/><polygon points='100,40 165,75 165,135 100,170 35,135 35,75'/></svg>");
+  background-size: 180px 156px;
+  background-repeat: repeat;
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 0;
+}
+section#contact .contact-card > * { position: relative; z-index: 1; }
+section#contact .contact-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--abr-yellow) !important;
+  box-shadow: 0 20px 40px rgba(10, 45, 110, 0.45), 0 0 0 1px rgba(212, 255, 58, 0.55) !important;
+}
+section#contact .contact-card-icon {
+  background: var(--abr-yellow) !important;
+  color: var(--abr-blue-1) !important;
+  border: 0 !important;
+  box-shadow: 0 6px 16px rgba(212, 255, 58, 0.40);
+}
+section#contact .contact-card-label {
+  color: rgba(212, 255, 58, 0.90) !important;
+  font-weight: 800;
+}
+section#contact .contact-card-value {
+  color: #FFFFFF !important;
+}
+section#contact .contact-card-value:hover {
+  color: var(--abr-yellow) !important;
+}
+section#contact .contact-card-sub {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Contact section title goes back to white on the more visible image */
+section#contact .section-title { color: #FFFFFF !important; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45); }
+section#contact .section-lede { color: rgba(255, 255, 255, 0.92) !important; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); }
+section#contact .section-eyebrow { color: var(--abr-yellow) !important; }
+
+/* The sections list container needs higher z-index so cards sit above the hex overlay */
+#sections-list { position: relative; z-index: 1; }
+
+/* Stats-band-bg already covered by .atmosphere-img selector; explicit override
+   so the existing photo blue-tints rather than washing to white. */
+.stats-band-bg { z-index: -1; }
+.stats-band-bg img { z-index: -1; }
+
+/* News carousel arrows match the new accent */
+.news-carousel-arrow:hover {
+  background: var(--abr-yellow) !important;
+  color: var(--abr-blue-1) !important;
+  border-color: var(--abr-yellow) !important;
+}
+
+/* Back-to-top button — lime accent ring + blue icon */
+#back-to-top {
+  background: var(--abr-yellow) !important;
+  color: var(--abr-blue-1) !important;
+  box-shadow: 0 10px 24px rgba(212, 255, 58, 0.40), 0 0 0 1px rgba(212, 255, 58, 0.50) !important;
+}
+#back-to-top:hover {
+  background: #FFFFFF !important;
+  color: var(--abr-blue-2) !important;
+}
